@@ -9,3 +9,38 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id                String    @id @default(uuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  email             String    @unique
+  name              String
+  password          String
+  ownListings       Listing[] @relation("OwnListings")
+  favoritedListings Listing[] @relation("FavoritedListings")
+
+  @@index([email], name: "email")
+}
+
+model Listing {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String
+  category    Category @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  price       Int
+  image       String[]
+  description String
+  location    String
+  postedBy    User     @relation("OwnListings", fields: [postedById], references: [id])
+  postedById  String
+  favoritedBy User[]   @relation("FavoritedListings")
+}
+
+model Category {
+  id       String    @id @default(uuid())
+  name     String
+  listings Listing[]
+}
