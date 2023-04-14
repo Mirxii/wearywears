@@ -36,6 +36,8 @@ model Listing {
   postedBy    User     @relation("OwnListings", fields: [postedById], references: [id])
   postedById  String
   favoritedBy User[]   @relation("FavoritedListings")
+
+  @@index([postedById], name: "postedById")
 }
 
 model Category {

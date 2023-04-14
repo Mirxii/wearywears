@@ -16,11 +16,10 @@ CREATE TABLE "Listing" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "title" TEXT NOT NULL,
-    "categoryId" TEXT NOT NULL,
-    "price" INTEGER NOT NULL,
-    "image" TEXT[],
     "description" TEXT NOT NULL,
     "location" TEXT NOT NULL,
+    "price" INTEGER NOT NULL,
+    "categoryId" TEXT NOT NULL,
     "postedById" TEXT NOT NULL,
 
     CONSTRAINT "Listing_pkey" PRIMARY KEY ("id")
@@ -45,6 +44,9 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE INDEX "email" ON "User"("email");
+
+-- CreateIndex
+CREATE INDEX "postedById" ON "Listing"("postedById");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_FavoritedListings_AB_unique" ON "_FavoritedListings"("A", "B");
