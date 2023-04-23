@@ -1,14 +1,12 @@
 import express from 'express';
 
+import { getAllListings, getListingById } from '../controllers/listings';
+
 const listingRouter = express.Router();
 
-listingRouter.get('/', (req, res) => {
-  res.send('OK');
-});
+listingRouter.get('/', getAllListings);
 
-listingRouter.get('/:id', (req, res) => {
-  res.send('OK');
-});
+listingRouter.get('/:id', getListingById);
 
 listingRouter.post('/', (req, res) => {
   res.send('OK');
