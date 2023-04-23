@@ -1,3 +1,6 @@
 node_modules
 # Keep environment variables out of version control
 .env
+
+# VSCode extension file for testing the API
+localhost.rest
