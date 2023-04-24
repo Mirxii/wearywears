@@ -1,8 +1,17 @@
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
+
 function App() {
   return (
-    <div className="App">
-      <h1>My App</h1>
-    </div>
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+    </ThemeProvider>
   );
 }
 
