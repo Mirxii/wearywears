@@ -23,6 +23,19 @@ model User {
   @@index([email], name: "email")
 }
 
+enum category {
+  SHIRTS
+  JACKETS
+  PANTS
+  SHORTS
+  SKIRTS
+  DRESSES
+  SHOES
+  HATS
+  ACCESSORIES
+  OTHER
+}
+
 model Listing {
   id          String   @id @default(uuid())
   createdAt   DateTime @default(now())
@@ -31,17 +44,10 @@ model Listing {
   description String
   location    String
   price       Int
-  category    Category @relation(fields: [categoryId], references: [id])
-  categoryId  String
+  category    category @default(OTHER)
   postedBy    User     @relation("OwnListings", fields: [postedById], references: [id])
   postedById  String
   favoritedBy User[]   @relation("FavoritedListings")
 
   @@index([postedById], name: "postedById")
-}
-
-model Category {
-  id       String    @id @default(uuid())
-  name     String
-  listings Listing[]
 }

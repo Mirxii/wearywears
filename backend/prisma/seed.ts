@@ -17,13 +17,21 @@ type Listing = {
   location: string;
   price: number;
   postedById: UUID;
-  categoryId: UUID;
+  category: Category;
 };
 
-type Category = {
-  id: UUID;
-  name: string;
-};
+enum Category {
+  SHIRTS = 'SHIRTS',
+  JACKETS = 'JACKETS',
+  PANTS = 'PANTS',
+  SHORTS = 'SHORTS',
+  SKIRTS = 'SKIRTS',
+  DRESSES = 'DRESSES',
+  SHOES = 'SHOES',
+  HATS = 'HATS',
+  ACCESSORIES = 'ACCESSORIES',
+  OTHER = 'OTHER',
+}
 
 const users: User[] = [
   {
@@ -31,25 +39,6 @@ const users: User[] = [
     name: 'John Doe',
     email: 'john@doe.com',
     password: 'password',
-  },
-];
-
-const Categories: Category[] = [
-  {
-    id: randomUUID(),
-    name: 'Tops',
-  },
-  {
-    id: randomUUID(),
-    name: 'Bottoms',
-  },
-  {
-    id: randomUUID(),
-    name: 'Shoes',
-  },
-  {
-    id: randomUUID(),
-    name: 'Accessories',
   },
 ];
 
@@ -61,7 +50,7 @@ const Listings: Listing[] = [
     location: 'Helsinki',
     price: 20,
     postedById: users[0].id,
-    categoryId: Categories[0].id,
+    category: Category.JACKETS,
   },
   {
     id: randomUUID(),
@@ -70,7 +59,7 @@ const Listings: Listing[] = [
     location: 'Tampere',
     price: 10,
     postedById: users[0].id,
-    categoryId: Categories[1].id,
+    category: Category.PANTS,
   },
   {
     id: randomUUID(),
@@ -79,7 +68,7 @@ const Listings: Listing[] = [
     location: 'Helsinki',
     price: 15,
     postedById: users[0].id,
-    categoryId: Categories[2].id,
+    category: Category.SHOES,
   },
   {
     id: randomUUID(),
@@ -88,16 +77,13 @@ const Listings: Listing[] = [
     location: 'Tampere',
     price: 5,
     postedById: users[0].id,
-    categoryId: Categories[3].id,
+    category: Category.HATS,
   },
 ];
 
 async function seed() {
   await prisma.user.createMany({
     data: users,
-  });
-  await prisma.category.createMany({
-    data: Categories,
   });
   await prisma.listing.createMany({
     data: Listings,

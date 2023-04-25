@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "category" AS ENUM ('SHIRTS', 'JACKETS', 'PANTS', 'SHORTS', 'SKIRTS', 'DRESSES', 'SHOES', 'HATS', 'ACCESSORIES', 'OTHER');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
@@ -19,18 +22,10 @@ CREATE TABLE "Listing" (
     "description" TEXT NOT NULL,
     "location" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
-    "categoryId" TEXT NOT NULL,
+    "category" "category" NOT NULL DEFAULT 'OTHER',
     "postedById" TEXT NOT NULL,
 
     CONSTRAINT "Listing_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Category" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-
-    CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -53,9 +48,6 @@ CREATE UNIQUE INDEX "_FavoritedListings_AB_unique" ON "_FavoritedListings"("A", 
 
 -- CreateIndex
 CREATE INDEX "_FavoritedListings_B_index" ON "_FavoritedListings"("B");
-
--- AddForeignKey
-ALTER TABLE "Listing" ADD CONSTRAINT "Listing_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Listing" ADD CONSTRAINT "Listing_postedById_fkey" FOREIGN KEY ("postedById") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
