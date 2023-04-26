@@ -1,8 +1,11 @@
 import prisma from '../db/prismaClient';
 import bcrypt from 'bcrypt';
+import { z } from 'zod';
 
 import { Request, Response } from 'express';
 import { User } from '@prisma/client';
+
+import { signupSchema } from '../schemas/users';
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -33,6 +36,8 @@ export const createUser = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
 
+    signupSchema.parse({ name, email, password });
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
@@ -47,6 +52,9 @@ export const createUser = async (req: Request, res: Response) => {
   } catch (error: any) {
     if (error.code === 'P2002') {
       return res.status(409).json({ error: 'Email already in use' });
+    }
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: error.issues[0].message });
     }
     res.status(500).json({ error: error.message });
   }
