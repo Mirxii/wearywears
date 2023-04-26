@@ -3,18 +3,26 @@ import { Request, Response } from 'express';
 import { Listing } from '@prisma/client';
 
 export const getAllListings = async (req: Request, res: Response) => {
-  const listings: Listing[] = await prisma.listing.findMany();
+  try {
+    const listings: Listing[] = await prisma.listing.findMany();
 
-  res.json(listings);
+    return res.json(listings);
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
+  }
 };
 
 export const getListingById = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const listing = await prisma.listing.findUnique({
-    where: {
-      id: String(id),
-    },
-  });
+  try {
+    const { id } = req.params;
+    const listing = await prisma.listing.findUnique({
+      where: {
+        id: String(id),
+      },
+    });
 
-  res.json(listing);
+    res.json(listing);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
 };
