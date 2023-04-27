@@ -1,6 +1,12 @@
 import express from 'express';
 
-import { createUser, getAllUsers, getUserById } from '../controllers/users';
+import {
+  createUser,
+  getAllUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+} from '../controllers/users';
 
 const userRouter = express.Router();
 
@@ -10,12 +16,8 @@ userRouter.get('/:id', getUserById);
 
 userRouter.post('/', createUser);
 
-userRouter.put('/:id', (req, res) => {
-  res.send('OK');
-});
+userRouter.put('/:id', updateUser);
 
-userRouter.delete('/:id', (req, res) => {
-  res.send('OK');
-});
+userRouter.delete('/:id', deleteUser);
 
 export default userRouter;
