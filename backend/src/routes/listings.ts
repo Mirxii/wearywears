@@ -1,6 +1,10 @@
 import express from 'express';
 
-import { getAllListings, getListingById } from '../controllers/listings';
+import {
+  getAllListings,
+  getListingById,
+  createListing,
+} from '../controllers/listings';
 
 const listingRouter = express.Router();
 
@@ -8,9 +12,7 @@ listingRouter.get('/', getAllListings);
 
 listingRouter.get('/:id', getListingById);
 
-listingRouter.post('/', (req, res) => {
-  res.send('OK');
-});
+listingRouter.post('/', createListing);
 
 listingRouter.put('/:id', (req, res) => {
   res.send('OK');

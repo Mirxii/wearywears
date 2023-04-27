@@ -1,6 +1,10 @@
 import prisma from '../db/prismaClient';
+import { z } from 'zod';
+
 import { Request, Response } from 'express';
 import { Listing } from '@prisma/client';
+
+import { listingSchema } from '../schemas/listings';
 
 export const getAllListings = async (req: Request, res: Response) => {
   try {
@@ -23,6 +27,40 @@ export const getListingById = async (req: Request, res: Response) => {
 
     res.json(listing);
   } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const createListing = async (req: Request, res: Response) => {
+  try {
+    const { title, description, price, location, category, postedById } =
+      req.body;
+
+    listingSchema.parse({
+      title,
+      description,
+      price,
+      location,
+      category,
+      postedById,
+    });
+
+    const listing = await prisma.listing.create({
+      data: {
+        title,
+        description,
+        price,
+        location,
+        category,
+        postedBy: { connect: { id: postedById } },
+      },
+    });
+
+    res.json(listing);
+  } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: error.issues[0].message });
+    }
     res.status(500).json({ error: error.message });
   }
 };
