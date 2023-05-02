@@ -33,7 +33,7 @@ export const getListingById = async (req: Request, res: Response) => {
 
 export const createListing = async (req: Request, res: Response) => {
   try {
-    const { title, description, price, location, category, postedById } =
+    const { title, description, price, location, category, image, postedById } =
       req.body;
 
     listingSchema.parse({
@@ -42,6 +42,7 @@ export const createListing = async (req: Request, res: Response) => {
       price,
       location,
       category,
+      image,
       postedById,
     });
 
@@ -52,6 +53,7 @@ export const createListing = async (req: Request, res: Response) => {
         price,
         location,
         category,
+        image,
         postedBy: { connect: { id: postedById } },
       },
     });

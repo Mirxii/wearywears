@@ -6,5 +6,6 @@ export const listingSchema = z.object({
   price: z.number().min(1),
   location: z.string().min(3).max(255),
   category: z.string().min(3).max(255),
+  image: z.string().min(3).max(255),
   postedById: z.string().min(3).max(255),
 });
