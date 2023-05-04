@@ -1,6 +1,7 @@
 import prisma from '../db/prismaClient';
 import bcrypt from 'bcrypt';
 import { z } from 'zod';
+import jwt from 'jsonwebtoken';
 
 import { Request, Response } from 'express';
 import { User } from '@prisma/client';
@@ -48,7 +49,23 @@ export const createUser = async (req: Request, res: Response) => {
       },
     });
 
-    res.json(user);
+    const token = jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+      },
+      process.env.JWT_SECRET as string,
+      {
+        expiresIn: '1h',
+      }
+    );
+
+    res.status(201).json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      token,
+    });
   } catch (error: any) {
     if (error.code === 'P2002') {
       return res.status(409).json({ error: 'Email already in use' });
