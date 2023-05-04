@@ -1,5 +1,7 @@
 import express from 'express';
 
+import { verifyToken } from '../middleware/verifyToken';
+
 import {
   getAllListings,
   getListingById,
@@ -11,6 +13,8 @@ const listingRouter = express.Router();
 listingRouter.get('/', getAllListings);
 
 listingRouter.get('/:id', getListingById);
+
+listingRouter.use(verifyToken);
 
 listingRouter.post('/', createListing);
 
