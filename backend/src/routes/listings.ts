@@ -6,6 +6,8 @@ import {
   getAllListings,
   getListingById,
   createListing,
+  updateListing,
+  deleteListing,
 } from '../controllers/listings';
 
 const listingRouter = express.Router();
@@ -18,12 +20,8 @@ listingRouter.use(verifyToken);
 
 listingRouter.post('/', createListing);
 
-listingRouter.put('/:id', (req, res) => {
-  res.send('OK');
-});
+listingRouter.put('/:id', updateListing);
 
-listingRouter.delete('/:id', (req, res) => {
-  res.send('OK');
-});
+listingRouter.delete('/:id', deleteListing);
 
 export default listingRouter;
