@@ -48,7 +48,7 @@ export const getAllListings = async (req: Request, res: Response) => {
 export const getListingById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const listing = await prisma.listing.findUnique({
+    const listing = await prisma.listing.findUniqueOrThrow({
       where: {
         id: String(id),
       },
@@ -56,6 +56,9 @@ export const getListingById = async (req: Request, res: Response) => {
 
     res.json(listing);
   } catch (error: any) {
+    if (error.code === 'P2025') {
+      return res.status(404).json({ error: 'Listing not found' });
+    }
     res.status(500).json({ error: error.message });
   }
 };
