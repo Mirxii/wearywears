@@ -2,15 +2,44 @@ import prisma from '../db/prismaClient';
 import { z } from 'zod';
 
 import { Request, Response } from 'express';
-import { Listing } from '@prisma/client';
+import { Listing, Prisma, category } from '@prisma/client';
 
 import { listingSchema } from '../schemas/listings';
 
 export const getAllListings = async (req: Request, res: Response) => {
   try {
-    const listings: Listing[] = await prisma.listing.findMany();
+    const { searchString, searchCategory, skip, take, orderBy } = req.query;
 
-    return res.json(listings);
+    const or: Prisma.ListingWhereInput = searchString
+      ? {
+          OR: [
+            {
+              title: { contains: searchString as string, mode: 'insensitive' },
+            },
+            {
+              description: {
+                contains: searchString as string,
+                mode: 'insensitive',
+              },
+            },
+          ],
+        }
+      : {};
+
+    const listings: Listing[] = await prisma.listing.findMany({
+      where: {
+        category: searchCategory as category,
+        ...or,
+      },
+      include: { postedBy: true },
+      skip: Number(skip) || undefined,
+      take: Number(take) || undefined,
+      orderBy: {
+        price: orderBy as Prisma.SortOrder,
+      },
+    });
+
+    res.json(listings);
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }
