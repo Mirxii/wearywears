@@ -95,3 +95,53 @@ export const createListing = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const updateListing = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { title, description, price, location, category, image } = req.body;
+
+    listingSchema.parse({
+      title,
+      description,
+      price,
+      location,
+      category,
+      image,
+    });
+
+    const listing = await prisma.listing.update({
+      where: {
+        id: String(id),
+      },
+      data: {
+        title,
+        description,
+        price,
+        location,
+        category,
+        image,
+      },
+    });
+
+    res.json(listing);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const deleteListing = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const listing = await prisma.listing.delete({
+      where: {
+        id: String(id),
+      },
+    });
+
+    res.json({ message: 'Listing deleted successfully' });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
