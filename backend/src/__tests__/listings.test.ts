@@ -77,8 +77,8 @@ describe('POST Listings endpoint', () => {
     const response = await supertest(app)
       .post('/api/users/signup')
       .send({
-        name: 'Test User',
-        email: 'user@test.com',
+        name: 'Test Lisiting',
+        email: 'listing@test.com',
         password: await bcrypt.hash('password', 10),
       });
 
@@ -143,6 +143,126 @@ describe('POST Listings endpoint', () => {
         location: 'Test Location',
         category: 'JACKETS',
         image: 'https://picsum.photos/200',
+        postedById: user_id,
+      });
+
+    expect(response.status).toEqual(400);
+    expect(response.type).toEqual('application/json');
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        error: 'Required',
+      })
+    );
+  });
+
+  test('should return status code 400 if description is missing', async () => {
+    const response = await supertest(app)
+      .post('/api/listings')
+      .set('Accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .set('Authorization', `Bearer ${user_token}`)
+      .send({
+        title: 'Test Jacket',
+        price: 100,
+        location: 'Test Location',
+        category: 'JACKETS',
+        image: 'https://picsum.photos/200',
+        postedById: user_id,
+      });
+
+    expect(response.status).toEqual(400);
+    expect(response.type).toEqual('application/json');
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        error: 'Required',
+      })
+    );
+  });
+
+  test('should return status code 400 if price is missing', async () => {
+    const response = await supertest(app)
+      .post('/api/listings')
+      .set('Accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .set('Authorization', `Bearer ${user_token}`)
+      .send({
+        title: 'Test Jacket',
+        description: 'This is a test listing for jacket',
+        location: 'Test Location',
+        category: 'JACKETS',
+        image: 'https://picsum.photos/200',
+        postedById: user_id,
+      });
+
+    expect(response.status).toEqual(400);
+    expect(response.type).toEqual('application/json');
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        error: 'Required',
+      })
+    );
+  });
+
+  test('should return status code 400 if location is missing', async () => {
+    const response = await supertest(app)
+      .post('/api/listings')
+      .set('Accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .set('Authorization', `Bearer ${user_token}`)
+      .send({
+        title: 'Test Jacket',
+        description: 'This is a test listing for jacket',
+        price: 100,
+        category: 'JACKETS',
+        image: 'https://picsum.photos/200',
+        postedById: user_id,
+      });
+
+    expect(response.status).toEqual(400);
+    expect(response.type).toEqual('application/json');
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        error: 'Required',
+      })
+    );
+  });
+
+  test('should return status code 400 if category is missing', async () => {
+    const response = await supertest(app)
+      .post('/api/listings')
+      .set('Accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .set('Authorization', `Bearer ${user_token}`)
+      .send({
+        title: 'Test Jacket',
+        description: 'This is a test listing for jacket',
+        price: 100,
+        location: 'Test Location',
+        image: 'https://picsum.photos/200',
+        postedById: user_id,
+      });
+
+    expect(response.status).toEqual(400);
+    expect(response.type).toEqual('application/json');
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        error: 'Required',
+      })
+    );
+  });
+
+  test('should return status code 400 if image is missing', async () => {
+    const response = await supertest(app)
+      .post('/api/listings')
+      .set('Accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .set('Authorization', `Bearer ${user_token}`)
+      .send({
+        title: 'Test Jacket',
+        description: 'This is a test listing for jacket',
+        price: 100,
+        location: 'Test Location',
+        category: 'JACKETS',
         postedById: user_id,
       });
 
