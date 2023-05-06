@@ -102,7 +102,8 @@ export const createListing = async (req: Request, res: Response) => {
 export const updateListing = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { title, description, price, location, category, image } = req.body;
+    const { title, description, price, location, category, image, postedById } =
+      req.body;
 
     listingSchema.parse({
       title,
@@ -111,6 +112,7 @@ export const updateListing = async (req: Request, res: Response) => {
       location,
       category,
       image,
+      postedById,
     });
 
     const listing = await prisma.listing.update({
@@ -124,11 +126,15 @@ export const updateListing = async (req: Request, res: Response) => {
         location,
         category,
         image,
+        postedBy: { connect: { id: postedById } },
       },
     });
 
     res.json(listing);
   } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: error.issues[0].message });
+    }
     res.status(500).json({ error: error.message });
   }
 };
