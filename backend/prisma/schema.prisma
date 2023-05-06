@@ -46,7 +46,7 @@ model Listing {
   image       String   @default("https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg")
   price       Int
   category    category @default(OTHER)
-  postedBy    User     @relation("OwnListings", fields: [postedById], references: [id])
+  postedBy    User     @relation("OwnListings", fields: [postedById], references: [id], onDelete: Cascade)
   postedById  String
   favoritedBy User[]   @relation("FavoritedListings")
 
