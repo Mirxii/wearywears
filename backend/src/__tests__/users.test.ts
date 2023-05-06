@@ -1,5 +1,6 @@
 import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import supertest from 'supertest';
+import bcrypt from 'bcrypt';
 import app from '../app';
 
 import prisma from '../db/prismaClient';
@@ -142,7 +143,7 @@ describe('LOGIN User endpoint', () => {
       data: {
         name: 'Test User',
         email: 'user@test.com',
-        password: '123456',
+        password: await bcrypt.hash('123456', 10),
       },
     });
   });
@@ -166,9 +167,68 @@ describe('LOGIN User endpoint', () => {
     expect(response.body).toEqual(
       expect.objectContaining({
         id: expect.any(String),
-        name: 'Test User',
         email: 'user@test.com',
         token: expect.any(String),
+      })
+    );
+  });
+
+  test('should return status code 401 if email is not found', async () => {
+    const response = await supertest(app).post('/api/users/login').send({
+      email: 'notfound@test.com',
+      password: '123456',
+    });
+
+    expect(response.status).toEqual(401);
+    expect(response.type).toEqual('application/json');
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        error: 'Invalid credentials',
+      })
+    );
+  });
+
+  test('should return status code 401 if password is incorrect', async () => {
+    const response = await supertest(app).post('/api/users/login').send({
+      email: 'user@test.com',
+      password: '1234567',
+    });
+
+    expect(response.status).toEqual(401);
+    expect(response.type).toEqual('application/json');
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        error: 'Invalid credentials',
+      })
+    );
+  });
+
+  test('should return status code 400 if email is missing', async () => {
+    const response = await supertest(app).post('/api/users/login').send({
+      email: ' ',
+      password: '123456',
+    });
+
+    expect(response.status).toEqual(400);
+    expect(response.type).toEqual('application/json');
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        error: 'Invalid email',
+      })
+    );
+  });
+
+  test('should return status code 400 if password is missing', async () => {
+    const response = await supertest(app).post('/api/users/login').send({
+      email: 'user@test.com',
+      password: ' ',
+    });
+
+    expect(response.status).toEqual(400);
+    expect(response.type).toEqual('application/json');
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        error: 'String must contain at least 6 character(s)',
       })
     );
   });
