@@ -20,7 +20,7 @@ describe('GET Users endpoint', () => {
     expect(response.body).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          id: '94b20cbf-2352-47b2-8c41-a927b1b20e9a',
+          id: expect.any(String),
           name: 'John Doe',
           email: 'john@doe.com',
         }),
@@ -30,11 +30,30 @@ describe('GET Users endpoint', () => {
 });
 
 describe('GET User by id endpoint', () => {
+  let id: string;
+
+  beforeAll(async () => {
+    const response = await prisma.user.create({
+      data: {
+        name: 'Test User',
+        email: 'user@test.com',
+        password: await bcrypt.hash('password', 10),
+      },
+    });
+
+    id = response.id;
+  });
+
+  afterAll(async () => {
+    await prisma.user.delete({
+      where: {
+        id,
+      },
+    });
+  });
+
   test('should return status code 200 if user exists', (done) => {
-    supertest(app)
-      .get('/api/users/94b20cbf-2352-47b2-8c41-a927b1b20e9a')
-      .expect(200)
-      .end(done);
+    supertest(app).get(`/api/users/${id}`).expect(200).end(done);
   });
 
   test('should return status code 404 if user does not exist', (done) => {
@@ -43,16 +62,16 @@ describe('GET User by id endpoint', () => {
 
   test('should return json data', async () => {
     const response = await supertest(app)
-      .get('/api/users/94b20cbf-2352-47b2-8c41-a927b1b20e9a')
+      .get(`/api/users/${id}`)
       .set('Accept', 'application/json');
 
     expect(response.status).toEqual(200);
     expect(response.type).toEqual('application/json');
     expect(response.body).toEqual(
       expect.objectContaining({
-        id: '94b20cbf-2352-47b2-8c41-a927b1b20e9a',
-        name: 'John Doe',
-        email: 'john@doe.com',
+        id: expect.any(String),
+        name: 'Test User',
+        email: 'user@test.com',
       })
     );
   });
@@ -236,6 +255,7 @@ describe('LOGIN User endpoint', () => {
 
 describe('UPDATE User endpoint', () => {
   let id: string;
+  let token: string;
 
   beforeAll(async () => {
     await prisma.user.create({
@@ -252,6 +272,7 @@ describe('UPDATE User endpoint', () => {
     });
 
     id = response.body.id;
+    token = response.body.token;
   });
 
   afterAll(async () => {
@@ -263,11 +284,14 @@ describe('UPDATE User endpoint', () => {
   });
 
   test('should be able to update name', async () => {
-    const response = await supertest(app).put(`/api/users/${id}`).send({
-      name: 'Test User Updated',
-      email: 'user@test.com',
-      password: '123456',
-    });
+    const response = await supertest(app)
+      .put(`/api/users/${id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        name: 'Test User Updated',
+        email: 'user@test.com',
+        password: '123456',
+      });
 
     expect(response.status).toEqual(200);
     expect(response.type).toEqual('application/json');
@@ -281,11 +305,14 @@ describe('UPDATE User endpoint', () => {
   });
 
   test('should be able to update email', async () => {
-    const response = await supertest(app).put(`/api/users/${id}`).send({
-      name: 'Test User',
-      email: 'user1@test.com',
-      password: '123456',
-    });
+    const response = await supertest(app)
+      .put(`/api/users/${id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        name: 'Test User',
+        email: 'user1@test.com',
+        password: '123456',
+      });
 
     expect(response.status).toEqual(200);
     expect(response.type).toEqual('application/json');
@@ -299,11 +326,14 @@ describe('UPDATE User endpoint', () => {
   });
 
   test('should be able to update password', async () => {
-    const response = await supertest(app).put(`/api/users/${id}`).send({
-      name: 'Test User',
-      email: 'user1@test.com',
-      password: 'password',
-    });
+    const response = await supertest(app)
+      .put(`/api/users/${id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        name: 'Test User',
+        email: 'user1@test.com',
+        password: 'password',
+      });
 
     expect(response.status).toEqual(200);
     expect(response.type).toEqual('application/json');
@@ -317,11 +347,14 @@ describe('UPDATE User endpoint', () => {
   });
 
   test('should return status code 400 if email is missing', async () => {
-    const response = await supertest(app).put(`/api/users/${id}`).send({
-      name: 'Test User',
-      email: ' ',
-      password: 'password',
-    });
+    const response = await supertest(app)
+      .put(`/api/users/${id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        name: 'Test User',
+        email: ' ',
+        password: 'password',
+      });
 
     expect(response.status).toEqual(400);
     expect(response.type).toEqual('application/json');
@@ -333,11 +366,14 @@ describe('UPDATE User endpoint', () => {
   });
 
   test('should return status code 400 if password is missing', async () => {
-    const response = await supertest(app).put(`/api/users/${id}`).send({
-      name: 'Test User',
-      email: 'user1@test.com',
-      password: ' ',
-    });
+    const response = await supertest(app)
+      .put(`/api/users/${id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        name: 'Test User',
+        email: 'user1@test.com',
+        password: ' ',
+      });
 
     expect(response.status).toEqual(400);
     expect(response.type).toEqual('application/json');
@@ -349,11 +385,14 @@ describe('UPDATE User endpoint', () => {
   });
 
   test('should return status code 400 if name is missing', async () => {
-    const response = await supertest(app).put(`/api/users/${id}`).send({
-      name: ' ',
-      email: 'user1@test.com',
-      password: 'password',
-    });
+    const response = await supertest(app)
+      .put(`/api/users/${id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        name: ' ',
+        email: 'user1@test.com',
+        password: 'password',
+      });
 
     expect(response.status).toEqual(400);
     expect(response.type).toEqual('application/json');
@@ -365,11 +404,14 @@ describe('UPDATE User endpoint', () => {
   });
 
   test('should return status code 409 if email is already in use', async () => {
-    const response = await supertest(app).put(`/api/users/${id}`).send({
-      name: 'Test User',
-      email: 'john@doe.com',
-      password: 'password',
-    });
+    const response = await supertest(app)
+      .put(`/api/users/${id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        name: 'Test User',
+        email: 'john@doe.com',
+        password: 'password',
+      });
 
     expect(response.status).toEqual(409);
     expect(response.type).toEqual('application/json');
@@ -399,8 +441,11 @@ describe('DELETE User endpoint', () => {
     });
 
     const id = response.body.id;
+    const token = response.body.token;
 
-    const responseDelete = await supertest(app).delete(`/api/users/${id}`);
+    const responseDelete = await supertest(app)
+      .delete(`/api/users/${id}`)
+      .set('Authorization', `Bearer ${token}`);
 
     expect(responseDelete.status).toEqual(200);
     expect(responseDelete.type).toEqual('application/json');

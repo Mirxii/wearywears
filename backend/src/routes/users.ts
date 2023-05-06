@@ -1,5 +1,7 @@
 import express from 'express';
 
+import { verifyToken } from '../middleware/verifyToken';
+
 import {
   createUser,
   loginUser,
@@ -18,6 +20,8 @@ userRouter.get('/:id', getUserById);
 userRouter.post('/signup', createUser);
 
 userRouter.post('/login', loginUser);
+
+userRouter.use(verifyToken);
 
 userRouter.put('/:id', updateUser);
 
