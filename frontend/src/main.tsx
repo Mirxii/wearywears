@@ -10,10 +10,15 @@ import '@fontsource/roboto/700.css';
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { teal } from '@mui/material/colors';
 
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
+    primary: teal,
+    secondary: {
+      main: '#212121',
+    },
   },
 });
 

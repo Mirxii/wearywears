@@ -23,6 +23,7 @@ const ListingsItem = (props: Listing) => {
         borderRadius: 2,
         p: 2,
         mb: 4,
+        bgcolor: 'secondary.main',
       }}
     >
       <Box

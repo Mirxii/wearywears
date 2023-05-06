@@ -42,7 +42,7 @@ const ListingsContainer = () => {
   }
 
   return (
-    <Stack sx={{ bgcolor: 'slategray', p: 2 }}>
+    <Stack sx={{ p: 8 }}>
       {data.map((listing: Listing) => (
         <ListingsItem
           key={listing.id}
