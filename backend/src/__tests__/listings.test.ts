@@ -502,3 +502,64 @@ describe('UPDATE listings endpoint', () => {
     );
   });
 });
+
+describe('DELETE /api/listings/:id', () => {
+  let user_id: string;
+  let token: string;
+  let listing_id: string;
+
+  beforeAll(async () => {
+    const response = await supertest(app)
+      .post('/api/users/signup')
+      .send({
+        name: 'Test Lisiting',
+        email: 'listing@test.com',
+        password: await bcrypt.hash('password', 10),
+      });
+
+    user_id = response.body.id;
+    token = response.body.token;
+
+    const listing = await prisma.listing.create({
+      data: {
+        title: 'Test Jacket',
+        description: 'This is a test listing for jacket',
+        price: 100,
+        location: 'Test Location',
+        category: 'JACKETS',
+        image: 'https://picsum.photos/200',
+        postedById: user_id,
+      },
+    });
+
+    listing_id = listing.id;
+  });
+
+  afterAll(async () => {
+    await prisma.listing.deleteMany({
+      where: {
+        postedById: String(user_id),
+      },
+    });
+
+    await prisma.user.delete({
+      where: {
+        id: String(user_id),
+      },
+    });
+  });
+
+  test('should be able to delete listing', async () => {
+    const response = await supertest(app)
+      .delete(`/api/listings/${listing_id}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toEqual(200);
+    expect(response.type).toEqual('application/json');
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        message: 'Listing deleted successfully',
+      })
+    );
+  });
+});
