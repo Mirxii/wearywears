@@ -31,11 +31,19 @@ export const getAllListings = async (req: Request, res: Response) => {
         category: searchCategory as category,
         ...or,
       },
-      include: { postedBy: true },
       skip: Number(skip) || undefined,
       take: Number(take) || undefined,
       orderBy: {
         price: orderBy as Prisma.SortOrder,
+      },
+      include: {
+        postedBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
 
