@@ -26,7 +26,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
 export const getUserById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findUniqueOrThrow({
       where: {
         id: String(id),
       },
@@ -34,6 +34,9 @@ export const getUserById = async (req: Request, res: Response) => {
 
     res.json(user);
   } catch (error: any) {
+    if (error.code === 'P2025') {
+      return res.status(404).json({ error: 'User not found' });
+    }
     res.status(500).json({ error: error.message });
   }
 };
