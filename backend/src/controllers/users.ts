@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 
 import { Request, Response } from 'express';
 
-import { userSchema } from '../schemas/users';
+import { userSchema, loginSchema } from '../schemas/users';
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -89,16 +89,18 @@ export const loginUser = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
-    userSchema.parse({ email, password });
+    loginSchema.parse({ email, password });
 
     const user = await prisma.user.findUnique({
       where: { email },
     });
+
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
+    console.log(passwordMatch);
     if (!passwordMatch) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
