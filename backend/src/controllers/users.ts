@@ -4,13 +4,18 @@ import { z } from 'zod';
 import jwt from 'jsonwebtoken';
 
 import { Request, Response } from 'express';
-import { User } from '@prisma/client';
 
 import { userSchema } from '../schemas/users';
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const users: User[] = await prisma.user.findMany();
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+    });
 
     res.json(users);
   } catch (error: any) {
