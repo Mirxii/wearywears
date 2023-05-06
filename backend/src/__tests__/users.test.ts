@@ -380,3 +380,34 @@ describe('UPDATE User endpoint', () => {
     );
   });
 });
+
+describe('DELETE User endpoint', () => {
+  beforeAll(async () => {
+    await prisma.user.create({
+      data: {
+        name: 'Test User',
+        email: 'user@test.com',
+        password: await bcrypt.hash('123456', 10),
+      },
+    });
+  });
+
+  test('should be able to delete user', async () => {
+    const response = await supertest(app).post('/api/users/login').send({
+      email: 'user@test.com',
+      password: '123456',
+    });
+
+    const id = response.body.id;
+
+    const responseDelete = await supertest(app).delete(`/api/users/${id}`);
+
+    expect(responseDelete.status).toEqual(200);
+    expect(responseDelete.type).toEqual('application/json');
+    expect(responseDelete.body).toEqual(
+      expect.objectContaining({
+        message: 'User deleted successfully',
+      })
+    );
+  });
+});
