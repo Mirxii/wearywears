@@ -1,13 +1,12 @@
 import { Container, Typography } from '@mui/material';
 
 import ListingsContainer from '../components/listings/ListingsContainer';
+import SearchBar from '../components/search/SearchBar';
 
 const Home = () => {
   return (
-    <Container sx={{ gap: 10 }}>
-      <Container sx={{ bgcolor: 'darkslategray', p: 2 }}>
-        <Typography>Search</Typography>
-      </Container>
+    <Container>
+      <SearchBar />
       <ListingsContainer />
     </Container>
   );
