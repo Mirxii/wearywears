@@ -145,12 +145,20 @@ export const updateUser = async (req: Request, res: Response) => {
         email,
         password: hashedPassword,
       },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
     });
 
     res.json(user);
   } catch (error: any) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: error.issues[0].message });
+    }
+    if (error.code === 'P2002') {
+      return res.status(409).json({ error: 'Email already in use' });
     }
     res.status(500).json({ error: error.message });
   }
