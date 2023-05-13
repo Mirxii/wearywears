@@ -64,7 +64,7 @@ const Signup = () => {
           px: 4,
         }}
       >
-        Search
+        Sign Up
       </Button>
     </Container>
   );
